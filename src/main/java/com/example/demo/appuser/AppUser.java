@@ -44,8 +44,8 @@ public class AppUser implements UserDetails {
             EnumType.STRING // when returning an appUserRole, it will return as a string
     )
     private AppUserRole appUserRole; // ADMIN or USER
-    private Boolean locked; // is the account locked
-    private Boolean enabled; // is the account enabled
+    private Boolean locked = false; // is the account locked
+    private Boolean enabled = false; // is the account enabled, and will be TRUE once the user has conformed their email
 
     public AppUser(String firstName, String lastName, String email, String password, AppUserRole appUserRole) {
         this.firstName = firstName;

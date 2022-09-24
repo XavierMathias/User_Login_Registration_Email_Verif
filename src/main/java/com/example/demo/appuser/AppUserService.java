@@ -43,6 +43,8 @@ public class AppUserService implements UserDetailsService {
 
         appUser.setPassword(encodedPassword); // sets the user's password as encoded
 
+        appUserRepository.save(appUser); // saving the user entity in the student repository
+
         // TODO: SEND confirmation token
         return "it works";
 
