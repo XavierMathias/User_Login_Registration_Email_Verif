@@ -35,7 +35,8 @@ public class AppUser implements UserDetails {
             generator = "student_sequence"
     )
     private Long id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String username;
     private String email;
     private String password;
@@ -46,14 +47,14 @@ public class AppUser implements UserDetails {
     private Boolean locked; // is the account locked
     private Boolean enabled; // is the account enabled
 
-    public AppUser(String name, String username, String email, String password, AppUserRole appUserRole, Boolean locked, Boolean enabled) {
-        this.name = name;
-        this.username = username;
+    public AppUser(String firstName, String lastName, String email, String password, AppUserRole appUserRole) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.appUserRole = appUserRole;
-        this.locked = locked;
-        this.enabled = enabled;
+//        this.locked = locked;
+//        this.enabled = enabled;
     }
 
     @Override
@@ -62,14 +63,31 @@ public class AppUser implements UserDetails {
         return Collections.singletonList(authority); // returning a collection
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     @Override
     public String getPassword() {
         return password;
     }
 
+
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
