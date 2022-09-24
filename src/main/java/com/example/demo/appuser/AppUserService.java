@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class AppUserService implements UserDetailsService {
 
     }
 
+    @Transactional
     public String signUpUser(AppUser appUser){
         boolean userExists = appUserRepository.findByEmail(appUser.getEmail()).isPresent(); // checks if the email exists in the repository
 
@@ -53,8 +55,10 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(appUser); // saving the user entity in the student repository
 
         String token = UUID.randomUUID().toString(); // creates a random token
-        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(15), appUser);
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        // These two are updating the tokens therefore this function is transactional (all or nothing)
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(15), appUser); // creating a token
+        confirmationTokenService.saveConfirmationToken(confirmationToken); // saving the token to the C/nfirmationTokenRepository
 
         //TODO: SEND EMAIL
 
