@@ -4,9 +4,13 @@ import com.example.demo.appuser.AppUser;
 import com.example.demo.appuser.AppUserRole;
 import com.example.demo.appuser.AppUserService;
 import com.example.demo.email.EmailSender;
+import com.example.demo.registration.token.ConfirmationToken;
+import com.example.demo.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -15,6 +19,9 @@ public class RegistrationService {
     private final AppUserService appUserService;
     private final EmailSender emailSender;
     private final EmailValidator emailValidator;
+    private final ConfirmationTokenService confirmationTokenService;
+
+
     public String register(RegistrationRequest request) {
         String email = request.getEmail();
         boolean isValidEmail = emailValidator.test(email);
@@ -30,7 +37,25 @@ public class RegistrationService {
         return token;
     }
 
+    @Transactional
+    public String confirmToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token).orElseThrow( () -> new IllegalStateException("token not found"));
 
+        if(confirmationToken.getConfirmedAt() != null){
+            throw new IllegalStateException("email already confirmed"); // returns if the token as already been confirmed
+        }
+
+        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
+
+        if(expiredAt.isBefore(LocalDateTime.now())){
+            throw new IllegalStateException("token expired");
+        }
+
+        confirmationTokenService.setConfirmationAt(token);
+        appUserService.enableAppUser(confirmationToken.getAppUser().getEmail());
+
+        return "confirmed";
+    }
 
     // building an email format
     private String buildEmail(String name, String link) {

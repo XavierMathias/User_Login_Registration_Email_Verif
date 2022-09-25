@@ -36,7 +36,10 @@ public class AppUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         // this will return the user's details using an email, and if it doesn't exist it the function will return a statement
-        return appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(String.format(EMAIL_NOT_FOUND, email))); // String.formar will but the email string in parameter in the %s
+
+        AppUser appUser = AppUserRepository
+
+        return appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(String.format(EMAIL_NOT_FOUND, email))); // String.format will but the email string in parameter in the %s
 
     }
 
@@ -64,5 +67,9 @@ public class AppUserService implements UserDetailsService {
 
         return token;
 
+    }
+
+    public int enableAppUser(String email) {
+        return appUserRepository.enableAppUser(email);
     }
 }
